@@ -1,8 +1,7 @@
 const Joi = require("joi");
  
 const baseuser = Joi.object({
-	username: Joi.string().min(2).max(29),
-	account_address: Joi.array().required(),
+	user_account_address: Joi.string().required(),
 	user_type: Joi.string().allow('').optional(),
 	bio: Joi.string().allow('').optional(),
 	email_address:Joi.string().allow('').optional(),

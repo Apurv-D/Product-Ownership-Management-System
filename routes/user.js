@@ -7,5 +7,7 @@ var router = express.Router();
 router.post("/createUser", UserController.createUser);
 router.post("/updateRetailer", UserController.AddRetailerDetails);
 router.get("/getUser/:id", UserController.getDetailsByAddress);
+router.post("/verifyManufacturer", UserController.verifyManufacturer);
+
 
 module.exports = router;

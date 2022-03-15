@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var manufacturers = new mongoose.Schema(
     {
-        retailer_account_address: {
+        manufacturer_account_address: {
             type: String,
             required: true
         },

@@ -4,7 +4,10 @@
 
 const user = require("./models/users.js");
 const retailer = require("./models/retailers.js");
+const manufacturer = require("./models/manufacturers.js");
+
 // const userProperties = require("./models/user_properties.model.js");
+
 const {
   userValidator,
   updateuserValidator,
@@ -63,6 +66,38 @@ const getDetailsByAddress = async (req,res,next) => {
   }
 }
 
+
+const verifyManufacturer = async (req,res,next) => {
+  try{
+    const data = await baseuser.validateAsync(req.body);
+    const uniqueUser=await user.findOne({user_account_address:data.user_account_address});
+    if(uniqueUser){
+      user.findOne({user_account_address: data.user_account_address}).then((usr)=>{
+      usr.as_manufacturer=true;
+      usr
+         .save()
+            .then(updated_user => {
+              const Manufacturer = new manufacturer({manufacturer_account_address: data.user_account_address}); 
+              Manufacturer
+                      .save()
+                          .then(crated_manufacturer => {
+                            return apiResponse.successResponseWithData(res, "manufacturer Details were updated", updated_user);
+                          })
+                          .catch(err => console.log(err));
+             })
+             .catch(err => console.log(err));
+    })
+    }else{
+      throw Error("No account with this address exists");
+    }
+
+  }catch(err){
+      console.log(err);
+      return handlerError(res,err);
+  }
+}
+
+
 const AddRetailerDetails = async (req, res, next) => {
   try {
     const data = await baseuser.validateAsync(req.body);
@@ -98,6 +133,7 @@ const AddRetailerDetails = async (req, res, next) => {
 module.exports = {
   createUser, 
   getDetailsByAddress,
-  AddRetailerDetails
+  AddRetailerDetails,
+  verifyManufacturer
 };
 

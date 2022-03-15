@@ -4,7 +4,8 @@ const UserController = require("../src/user/user.controller");
 var router = express.Router();
 
 // router.get("/", UserController.getUser);
-
-router.post("/", UserController.createUser);
+router.post("/createUser", UserController.createUser);
+router.post("/updateRetailer", UserController.AddRetailerDetails);
+router.get("/getUser/:id", UserController.getDetailsByAddress);
 
 module.exports = router;

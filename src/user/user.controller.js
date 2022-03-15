@@ -51,10 +51,53 @@ const createUser = async (req, res, next) => {
   }
 };
 
+const getDetailsByAddress = async (req,res,next) => {
+  try{
+    const user_account_address = req.params.id;
+    const User = await user.findOne({user_account_address})
+    const Retailer = await retailer.findOne({retailer_account_address:user_account_address});
+    return apiResponse.successResponseWithData(res,"Success",User, Retailer);
+  }catch(err){
+      console.log(err);
+      return handlerError(res,err);
+  }
+}
 
+const AddRetailerDetails = async (req, res, next) => {
+  try {
+    const data = await baseuser.validateAsync(req.body);
+    retailer.findOne({retailer_account_address: data.user_account_address}).then((retailer)=>{
+      retailer.name = data.name;
+      retailer.bio = data.bio;
+      retailer.email_address = data.email_address; 
+      retailer.bg_img_url = data.bg_img_url;
+      retailer.profile_pic_url = data.profile_pic_url;
+      retailer.is_deleted = data.is_deleted;
+      retailer.is_verified = data.is_verified;
+      retailer
+           .save()
+             .then(created => {
+              return apiResponse.successResponseWithData(res, "Retailer Details were updated", created);
+             })
+             .catch(err => console.log(err));
+
+
+      return apiResponse.successResponseWithData(
+      res,
+      "Retailer updated successfully created sucessfully !..",
+      retailer_ref
+    );
+      });
+  } catch (err) {
+    console.log(err);
+    return handlerError(res, err);
+  }
+};
 
 
 module.exports = {
-  createUser
+  createUser, 
+  getDetailsByAddress,
+  AddRetailerDetails
 };
 

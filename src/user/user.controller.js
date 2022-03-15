@@ -130,10 +130,42 @@ const AddRetailerDetails = async (req, res, next) => {
 };
 
 
+const AddManufacturerDetails = async (req, res, next) => {
+  try {
+    const data = await baseuser.validateAsync(req.body);
+    user.findOne({user_account_address: data.user_account_address}).then((usr) => {
+        if(usr.as_manufacturer){
+        manufacturer.findOne({manufacturer_account_address: data.user_account_address}).then((manufactur)=>{
+        manufactur.name = data.name;
+        manufactur.bio = data.bio;
+        manufactur.email_address = data.email_address; 
+        manufactur.bg_img_url = data.bg_img_url;
+        manufactur.profile_pic_url = data.profile_pic_url;
+        manufactur.is_deleted = data.is_deleted;
+        manufactur.is_verified = data.is_verified;
+        manufactur
+             .save()
+               .then(created => {
+                return apiResponse.successResponseWithData(res, "manufacturer Details were updated", created);
+               })
+               .catch(err => console.log(err));
+        });
+      }else{
+        return apiResponse.successResponseWithData(res, "You have not been verified yet", usr);
+      }
+    })
+    
+  } catch (err) {
+    console.log(err);
+    return handlerError(res, err);
+  }
+};
+
 module.exports = {
   createUser, 
   getDetailsByAddress,
   AddRetailerDetails,
-  verifyManufacturer
+  verifyManufacturer,
+  AddManufacturerDetails
 };
 

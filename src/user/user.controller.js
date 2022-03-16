@@ -98,6 +98,7 @@ const verifyManufacturer = async (req,res,next) => {
 }
 
 
+
 const AddRetailerDetails = async (req, res, next) => {
   try {
     const data = await baseuser.validateAsync(req.body);
@@ -115,8 +116,7 @@ const AddRetailerDetails = async (req, res, next) => {
               return apiResponse.successResponseWithData(res, "Retailer Details were updated", created);
              })
              .catch(err => console.log(err));
-
-
+             
       return apiResponse.successResponseWithData(
       res,
       "Retailer updated successfully created sucessfully !..",

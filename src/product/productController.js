@@ -30,9 +30,7 @@ const createProduct = async (req, res, next) => {
 			// var string = JSON.stringify(bytecode);
 			// let deploy_contract=new web3.eth.Contract(JSON.parse(string));
 			let contract = new web3.eth.Contract(abi2, address3);
-		    var bidAuctionReceipt=await contract.methods.getCodes({_customer: "a", _brand: "nike", _model: "ab", _status: 3, _description: "abhishek", _manufactuerName: "abhishek", _manufactuerLocation: "mumbai", _manufactuerTimestamp: "abshs"}).send({from: address1});
-		    console.log(bidAuctionReceipt)
-		    return bidAuctionReceipt;	
+		    contract.methods.getCodes({_customer: "a", _brand: "nike", _model: "ab", _status: 3, _description: "abhishek", _manufactuerName: "abhishek", _manufactuerLocation: "mumbai", _manufactuerTimestamp: "abshs"}).call((err, result) => { console.log(result) });
 		    };
 		    init();
 		    console.log("function exceuted")		
@@ -41,6 +39,31 @@ const createProduct = async (req, res, next) => {
 		return apiResponse.ErrorResponse(res, err);
 	}
 };
+
+const addcustomer = async (req, res, next) => {
+  try {
+		const init = async() => {
+			const provider = new  HDWalletProvider(
+			  privateKey1,
+			  'https://ropsten.infura.io/v3/1693cef23bd542968df2435f25726d39'
+			);
+			const web3 = new Web3(provider);
+			const accounts= await web3.eth.getAccounts();
+			// contractInstance = new web3.eth.Contract(bytecode);
+			// var string = JSON.stringify(bytecode);
+			// let deploy_contract=new web3.eth.Contract(JSON.parse(string));
+			let contract = new web3.eth.Contract(abi2, address3);
+		    const r = contract.methods.createCustomer({_hashedemail: "a"}, {_name: "nike"}, {_phone: "66"}).send({from:address1});
+		    console.log(r);
+		    };
+		    init();
+		    console.log("function exceuted")		
+	}catch (err) {
+		//throw error in json response with status 500. 
+		return apiResponse.ErrorResponse(res, err);
+	}
+};
+
 
 const getProductOwnedByCustomer = async (req, res, next) => {
   try {
@@ -68,6 +91,7 @@ const getProductOwnedByCustomer = async (req, res, next) => {
 };
 module.exports = {
   createProduct,
-  getProductOwnedByCustomer
+  getProductOwnedByCustomer,
+  addcustomer
 };
 

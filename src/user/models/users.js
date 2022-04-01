@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var users2 = new mongoose.Schema(
+var users3 = new mongoose.Schema(
     {
         user_account_address: {
             type: String,
@@ -16,7 +16,11 @@ var users2 = new mongoose.Schema(
         as_manufacturer: {
             type: Boolean,
             default: false
+        },
+        user_email: {
+            type: String,
+            required: false
         }
 });
 
-module.exports = mongoose.model("users2", users2);
+module.exports = mongoose.model("users3", users3);

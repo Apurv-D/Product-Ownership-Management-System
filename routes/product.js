@@ -5,5 +5,6 @@ var router = express.Router();
 
 // router.get("/", UserController.getUser);
 router.post("/createProduct", productcontroller.getProductOwnedByCustomer);
+router.post("/addcustomer", productcontroller.addcustomer);
 
 module.exports = router;

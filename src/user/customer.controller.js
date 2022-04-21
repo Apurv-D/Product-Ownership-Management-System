@@ -102,6 +102,43 @@ const acceptProductRequest = async (req, res, next) => {
   }
 };
 
+const confirmProduct = async (req, res, next) => {
+  try {
+    const data = (req.body);
+    const uniqueCustomer=await customer.findOne({customerAddress:req.params.id});
+    console.log("Here is the error: ", uniqueCustomer)
+    if(uniqueCustomer){
+      console.log("inside if")
+      customer.findOne({customerAddress:data.customerAddress}).then((cust)=>{
+      var arr = cust.productConfirmations;
+      var index;
+      for(var i=0; i<arr.length; i++){
+        if(arr[i].productId == data.productId){
+          index=i;
+          break;
+        }
+      }
+      console.log("indx is ", index)
+      cust.productConfirmations.splice(index, 1);
+      cust
+         .save()
+            .then(updatedCustomer => {
+              
+              return apiResponse.successResponseWithData(res, "Customer Details were updated", updatedCustomer);
+                          
+             })
+             .catch(err => console.log(err));
+      })
+
+    }else{
+      throw Error("account with this address already exists!");
+    }
+  } catch (err) {
+    console.log(err);
+    return handlerError(res, err);
+  }
+};
+
 const getDetailsByAddress = async (req,res,next) => {
   try{
     const user_account_address = req.params.id;
@@ -150,6 +187,7 @@ const verifyManufacturer = async (req,res,next) => {
 
 
 module.exports = {
+  confirmProduct,
   createCustomer,
   acceptProductRequest,
   addRequest, 

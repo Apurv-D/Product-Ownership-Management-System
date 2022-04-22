@@ -2,7 +2,7 @@
 
 
 
-const customer = require("./models/customer.js");
+const manufacturer = require("./models/manufacturer");
 
 // const userProperties = require("./models/user_properties.model.js");
 
@@ -26,20 +26,20 @@ const handlerError = (res, err) => {
   return apiResponse.ErrorResponse(res, "Internal Server Error");
 };
 
-const createCustomer = async (req, res, next) => {
+const createManufacturer = async (req, res, next) => {
   try {
     const data = (req.body);
-    const uniqueCustomer=await customer.findOne({customerAddress:data.customerAddress});
-    console.log("Here is the error: ", uniqueCustomer)
-    if(uniqueCustomer){
-      return apiResponse.successResponseWithData(res, "Customer Details were updated", uniqueCustomer);
+    const uniqueManufacturer=await manufacturer.findOne({manufacturerAddress:data.manufacturerAddress});
+    console.log("Here is the error: ", uniqueManufacturer)
+    if(uniqueManufacturer){
+      return apiResponse.successResponseWithData(res, "Customer Details were updated", uniqueManufacturer);
     }
-    const Customer = new customer({...(data)});
-    const customerRef = await Customer.save();
+    const Manufacturer = new manufacturer({...(data)});
+    const manufacturerRef = await Manufacturer.save();
     return apiResponse.successResponseWithData(
       res,
       "user created sucessfully !..",
-      customerRef
+      manufacturerRef
     );
   } catch (err) {
     console.log(err);
@@ -187,8 +187,8 @@ const verifyManufacturer = async (req,res,next) => {
 
 
 module.exports = {
+  createManufacturer,
   confirmProduct,
-  createCustomer,
   acceptProductRequest,
   addRequest, 
   getDetailsByAddress,

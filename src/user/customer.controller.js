@@ -3,6 +3,7 @@
 
 
 const customer = require("./models/customer.js");
+const manufacturer = require("./models/manufacturer");
 
 // const userProperties = require("./models/user_properties.model.js");
 
@@ -47,12 +48,52 @@ const createCustomer = async (req, res, next) => {
   }
 };
 
+const signIn = async (req, res, next) => {
+  try {
+    const data = (req.body);
+    const uniqueCustomer=await customer.findOne({customerAddress:req.params.id});
+    console.log("Here is the error: ", uniqueCustomer)
+    if(uniqueCustomer){
+      return apiResponse.successResponseWithData(res, "customer", uniqueCustomer);
+    }
+    const uniqueManufacturer=await manufacturer.findOne({manufacturerAddress:req.params.id});
+    console.log("Here is the error: ", uniqueManufacturer)
+    if(uniqueManufacturer){
+      return apiResponse.successResponseWithData(res, "manufacturer", uniqueManufacturer);
+    }
+    return apiResponse.successResponseWithData(res, "Sorry this address does not exists");
+    
+  } catch (err) {
+    console.log(err);
+    return handlerError(res, err);
+  }
+};
+
+
+
+const updateCustomer = async (req, res, next) => {
+  try {
+    const data = (req.body);
+    const uniqueCustomer=await customer.findOne({customerAddress:data.customerAddress});
+    console.log("Here is the error: ", uniqueCustomer)
+    if(uniqueCustomer){
+      const updatedCustomer = await customer.findOneAndUpdate({customerAddress:data.customerAddress},data,{new:true}) 
+      return apiResponse.successResponseWithData(res, "Customer Details were updated", updatedCustomer);
+
+    }else{
+      throw Error("account with this address already exists!");
+    }
+  } catch (err) {
+    console.log(err);
+    return handlerError(res, err);
+  }
+};
+
 
 const addRequest = async (req, res, next) => {
   try {
     const data = (req.body);
     const uniqueCustomer=await customer.findOne({customerAddress:req.params.id});
-    console.log("Here is the error: ", uniqueCustomer)
     if(uniqueCustomer){
       customer.findOne({customerAddress:req.params.id}).then((cust)=>{
       cust.incomingRequest.push({walletAddress:data.walletAddress, productId:data.productId});
@@ -67,7 +108,22 @@ const addRequest = async (req, res, next) => {
       })
 
     }else{
-      throw Error("account with this address already exists!");
+      const uniqueManufacturer=await manufacturer.findOne({manufacturerAddress:req.params.id});
+      if(uniqueManufacturer){
+        manufacturer.findOne({manufacturerAddress:req.params.id}).then((manufac)=>{
+        manufac.incomingRequest.push({walletAddress:data.walletAddress, productId:data.productId});
+        manufac
+           .save()
+              .then(updatedManufacturer => {
+                
+                return apiResponse.successResponseWithData(res, "owner: manufacturer was updated", updatedManufacturer);
+                            
+               })
+               .catch(err => console.log(err));
+        })
+    }else{
+      throw Error("owner with this address does not exists!");
+    }
     }
   } catch (err) {
     console.log(err);
@@ -79,8 +135,48 @@ const acceptProductRequest = async (req, res, next) => {
   try {
     const data = (req.body);
     const uniqueCustomer=await customer.findOne({customerAddress:req.params.id});
-    console.log("Here is the error: ", uniqueCustomer)
     if(uniqueCustomer){
+      if(data.isCustomer=="true"){
+        console.log("yea a customer")
+        customer.findOne({customerAddress:data.walletAddress}).then((cust)=>{
+          var arr = cust.incomingRequest;
+          var index;
+          for(var i=0; i<arr.length; i++){
+            if(arr[i].productId == data.productId){
+              index=i;
+              break;
+            }
+          }
+          console.log("indx is ", index)
+          cust.incomingRequest.splice(index, 1);
+          cust
+             .save()
+                .then(updatedCustomer => {
+                 })
+                 .catch(err => console.log(err));
+        })
+      }else{
+        console.log("ye a manufacturer")
+        manufacturer.findOne({manufacturerAddress:data.walletAddress}).then((manufac)=>{
+          var arr = manufac.incomingRequest;
+          var index;
+          for(var i=0; i<arr.length; i++){
+            if(arr[i].productId == data.productId){
+              index=i;
+              break;
+            }
+          }
+          console.log("indx is ", index)
+          manufac.incomingRequest.splice(index, 1);
+          manufac
+             .save()
+                .then(updatedManufacturer => {
+                console.log(",...")                              
+                 })
+                 .catch(err => console.log(err));
+        })
+      }
+
       customer.findOne({customerAddress:req.params.id}).then((cust)=>{
       cust.productConfirmations.push({ productId:data.productId});
       cust
@@ -106,9 +202,7 @@ const confirmProduct = async (req, res, next) => {
   try {
     const data = (req.body);
     const uniqueCustomer=await customer.findOne({customerAddress:req.params.id});
-    console.log("Here is the error: ", uniqueCustomer)
     if(uniqueCustomer){
-      console.log("inside if")
       customer.findOne({customerAddress:req.params.id}).then((cust)=>{
       var arr = cust.productConfirmations;
       var index;
@@ -118,7 +212,6 @@ const confirmProduct = async (req, res, next) => {
           break;
         }
       }
-      console.log("indx is ", index)
       cust.productConfirmations.splice(index, 1);
       cust
          .save()
@@ -134,7 +227,6 @@ const confirmProduct = async (req, res, next) => {
       throw Error("account with this address already exists!");
     }
   } catch (err) {
-    console.log(err);
     return handlerError(res, err);
   }
 };
@@ -188,6 +280,8 @@ const verifyManufacturer = async (req,res,next) => {
 
 module.exports = {
   confirmProduct,
+  signIn,
+  updateCustomer,
   createCustomer,
   acceptProductRequest,
   addRequest, 

@@ -12,6 +12,7 @@ router.post("/acceptProductRequest/:id", CustomerController.acceptProductRequest
 router.post("/confirmProduct/:id", CustomerController.confirmProduct);
 router.get("/signIn/:id", CustomerController.signIn);
 
+router.post("/declineProductRequest/:id", CustomerController.declineProductRequest);
 
 
 

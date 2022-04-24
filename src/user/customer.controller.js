@@ -43,7 +43,7 @@ const createCustomer = async (req, res, next) => {
       customerRef
     );
   } catch (err) {
-    console.log(err);
+    console.log("Some errs occured while fetching the Error: ", err);
     return handlerError(res, err);
   }
 };
@@ -77,12 +77,11 @@ const updateCustomer = async (req, res, next) => {
     if(uniqueCustomer){
       const updatedCustomer = await customer.findOneAndUpdate({customerAddress:data.customerAddress},data,{new:true}) 
       return apiResponse.successResponseWithData(res, "Customer Details were updated", updatedCustomer);
-
     }else{
-      throw Error("Sorry No customer exists with this address!");
+      return apiResponse.successResponseWithData(res, "Sorry No customer exists with this address!");
     }
   } catch (err) {
-    console.log(err);
+    console.log("Some errs occured while fetching the Error: ", err);
     return handlerError(res, err);
   }
 };
@@ -99,28 +98,22 @@ const addRequest = async (req, res, next) => {
       for(var i=0; i<arr.length; i++){
         console.log(arr[i].walletAddress == req.params.id)
         if(arr[i].productId == data.productId && arr[i].walletAddress == data.walletAddress){
-
           index=i;
           break;
         }
       }
       if (index == -1){
-      cust.incomingRequest.push({walletAddress:data.walletAddress, productId:data.productId});
-      cust
+        cust.incomingRequest.push({walletAddress:data.walletAddress, productId:data.productId});
+        cust
          .save()
-            .then(updatedCustomer => {
-              
-              return apiResponse.successResponseWithData(res, "Customer Details were updated", updatedCustomer);
-                          
-             })
-             .catch(err => console.log(err));
-       }else{
-          return apiResponse.successResponseWithData(res, "youve already requested");           
-
-       }
+              .then(updatedCustomer => {
+                return apiResponse.successResponseWithData(res, "Customer Details were updated", updatedCustomer);
+               })
+               .catch(err => console.log(err));
+      }else{
+        return apiResponse.successResponseWithData(res, "youve already requested");           
+      }
       })
-
-
     }else{
       const uniqueManufacturer=await manufacturer.findOne({manufacturerAddress:req.params.id});
       if(uniqueManufacturer){
@@ -138,9 +131,7 @@ const addRequest = async (req, res, next) => {
         manufac
            .save()
               .then(updatedManufacturer => {
-                
                 return apiResponse.successResponseWithData(res, "owner: manufacturer was updated", updatedManufacturer);
-                            
                })
                .catch(err => console.log(err));
              }
@@ -148,13 +139,13 @@ const addRequest = async (req, res, next) => {
                 return apiResponse.successResponseWithData(res, "youve already requested");           
              }
         })
-
       }else{
-        throw Error("Following address ", req.params.id, "is invalid");
+        return apiResponse.successResponseWithData(res, "product Owner Address does not exists");
+      }
     }
-    }
-  } catch (err) {
-    console.log(err);
+  } 
+  catch (err) {
+    console.log("Some errs occured while fetching the Error: ", err);
     return handlerError(res, err);
   }
 };
@@ -178,7 +169,7 @@ const acceptProductRequest = async (req, res, next) => {
             }
           }
           
-          console.log("indx is ", index)
+          // console.log("indx is ", index)
           cust.incomingRequest.splice(index, 1);
           cust
              .save()
@@ -187,7 +178,7 @@ const acceptProductRequest = async (req, res, next) => {
                  .catch(err => console.log(err));
         })
       }else{
-        console.log("ye a manufacturer")
+        // console.log("ye a manufacturer")
         await manufacturer.findOne({manufacturerAddress:data.walletAddress}).then((manufac)=>{
           var arr = manufac.incomingRequest;
           
@@ -198,18 +189,17 @@ const acceptProductRequest = async (req, res, next) => {
               break;
             }
           }
-          
-          console.log("indx is ", index)
+          // console.log("indx is ", index)
           manufac.incomingRequest.splice(index, 1);
           manufac
              .save()
                 .then(updatedManufacturer => {
-                console.log(",...")                              
+                // console.log(",...")                              
                  })
                  .catch(err => console.log(err));
         })
       }
-      console.log("index", index)
+      // console.log("index", index)
       if (index == -1){
         return apiResponse.successResponseWithData(res, "No product was found in the incomingRequest");
       }else{
@@ -219,7 +209,7 @@ const acceptProductRequest = async (req, res, next) => {
            .save()
               .then(updatedCustomer => {
                 
-                return apiResponse.successResponseWithData(res, "Customer Details were updated", updatedCustomer);
+                return apiResponse.successResponseWithData(res, "Customer Details were updated | confirmation Request was added", updatedCustomer);
                             
                })
                .catch(err => console.log(err));
@@ -227,7 +217,7 @@ const acceptProductRequest = async (req, res, next) => {
       }
 
     }else{
-      throw Error("Sorry no customer exists for the given address!");
+      return apiResponse.successResponseWithData(res, "Customer Not found")
     }
   } catch (err) {
     console.log(err);
@@ -254,7 +244,7 @@ const declineProductRequest = async (req, res, next) => {
             }
           }
           if (index != -1){
-          console.log("indx is ", index)
+          // console.log("indx is ", index)
           cust.incomingRequest.splice(index, 1);
           cust
              .save()
@@ -265,7 +255,7 @@ const declineProductRequest = async (req, res, next) => {
           }
         })
       }else{
-        console.log("ye a manufacturer")
+        // console.log("ye a manufacturer")
         await manufacturer.findOne({manufacturerAddress:data.walletAddress}).then((manufac)=>{
           var arr = manufac.incomingRequest;
           
@@ -295,7 +285,8 @@ const declineProductRequest = async (req, res, next) => {
       }
 
     }else{
-      throw Error("Sorry no customer exists for the given address!");
+      return apiResponse.successResponseWithData(res, "Customer Not found")
+
     }
   } catch (err) {
     console.log(err);
@@ -332,7 +323,7 @@ const confirmProduct = async (req, res, next) => {
       })
 
     }else{
-      throw Error("Sorry no customer exists for the given address!");
+      return apiResponse.successResponseWithData(res, "Customer Not found")
     }
   } catch (err) {
     return handlerError(res, err);
@@ -341,16 +332,7 @@ const confirmProduct = async (req, res, next) => {
 
 
 
-const getDetailsByAddress = async (req,res,next) => {
-  try{
-    const user_account_address = req.params.id;
-    const User = await user.findOne({user_account_address})
-    return apiResponse.successResponseWithData(res,"Success",User);
-  }catch(err){
-      console.log(err);
-      return handlerError(res,err);
-  }
-}
+
 
 
 const verifyManufacturer = async (req,res,next) => {
@@ -374,7 +356,8 @@ const verifyManufacturer = async (req,res,next) => {
              .catch(err => console.log(err));
     })
     }else{
-      throw Error("No account with this address exists");
+      return apiResponse.successResponseWithData(res, "Manufacturer not Found")
+
     }
 
   }catch(err){
@@ -395,7 +378,6 @@ module.exports = {
   createCustomer,
   acceptProductRequest,
   addRequest, 
-  getDetailsByAddress,
   verifyManufacturer,
   declineProductRequest
 };

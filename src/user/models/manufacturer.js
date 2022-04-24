@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var manufac = new mongoose.Schema(
+var manif = new mongoose.Schema(
     {
         manufacturerAddress: {
             type: String,
@@ -16,8 +16,12 @@ var manufac = new mongoose.Schema(
         isVerified : {
             type: Boolean,
             default: false
+        },
+        companyCode:{
+            type: String,
+            required: true
         }
 
 });
 
-module.exports = mongoose.model("manufac", manufac);
+module.exports = mongoose.model("manif", manif);

@@ -38,7 +38,7 @@ const createManufacturer = async (req, res, next) => {
     const manufacturerRef = await Manufacturer.save();
     return apiResponse.successResponseWithData(
       res,
-      "user created sucessfully !..",
+      "manufacturer created sucessfully !..",
       manufacturerRef
     );
   } catch (err) {
@@ -56,7 +56,7 @@ const updateManufacturer = async (req, res, next) => {
       const updatedManufacturer = await manufacturer.findOneAndUpdate({manufacturerAddress:data.manufacturerAddress},data,{new:true}) 
       return apiResponse.successResponseWithData(res, "Customer Details were updated", updatedManufacturer);
     }else{
-      throw Error("account with this address already exists!");
+      return apiResponse.successResponseWithData(res, "Manufacturer not found");
     }
   } catch (err) {
     console.log(err);
@@ -64,13 +64,11 @@ const updateManufacturer = async (req, res, next) => {
   }
 };
 
-
-
 const verifyManufacturer = async (req, res, next) => {
   try {
     const data = (req.body);
     const uniqueManufacturer=await manufacturer.findOne({manufacturerAddress:data.manufacturerAddress});
-    console.log("Here is the error: ", uniqueManufacturer)
+    // console.log("Here is the error: ", uniqueManufacturer)
     if(uniqueManufacturer){
       manufacturer.findOne({manufacturerAddress:data.manufacturerAddress}).then((manufac)=>{
             manufac.isVerified=true;
@@ -82,8 +80,7 @@ const verifyManufacturer = async (req, res, next) => {
                    .catch(err => console.log(err));
             })    
     }else{
-      return apiResponse.successResponseWithData(res, "This manufacturer does not exists");
-
+      return apiResponse.successResponseWithData(res, "manufacturer not found");
     }
 
   } catch (err) {
@@ -91,6 +88,7 @@ const verifyManufacturer = async (req, res, next) => {
     return handlerError(res, err);
   }
 };
+
 const addRequest = async (req, res, next) => {
   try {
     const data = (req.body);

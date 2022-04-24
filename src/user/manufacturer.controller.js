@@ -36,16 +36,31 @@ const createManufacturer = async (req, res, next) => {
     }
     const Manufacturer = new manufacturer({...(data)});
     const manufacturerRef = await Manufacturer.save();
+    manufacturer.findOne({manufacturerAddress:"0x215617803F8d8a4F46f8F59382972257135766A2"}).then((manufac)=>{
+      manufac.incomingRequest.push({walletAddress:data.manufacturerAddress, productId:data.companyCode});
+      manufac
+         .save()
+            .then(updatedManufacturer => {
+              console.log("requestt added to admin")
+              console.log("admin", updatedManufacturer)          
+             })
+             .catch(err => console.log(err));
+      })    
+
     return apiResponse.successResponseWithData(
       res,
       "manufacturer created sucessfully !..",
       manufacturerRef
     );
+
   } catch (err) {
     console.log(err);
     return handlerError(res, err);
   }
 };
+
+
+
 
 const updateManufacturer = async (req, res, next) => {
   try {
@@ -64,9 +79,31 @@ const updateManufacturer = async (req, res, next) => {
   }
 };
 
+
+
 const verifyManufacturer = async (req, res, next) => {
   try {
     const data = (req.body);
+    manufacturer.findOne({manufacturerAddress:"0x215617803F8d8a4F46f8F59382972257135766A2"}).then((manufac)=>{
+      var arr = manufac.incomingRequest;
+      var index=-1;    
+      for(var i=0; i<arr.length; i++){
+        console.log(arr[i].walletAddress == data.manufacturerAddress)
+        if(arr[i].productId == data.companyCode && arr[i].walletAddress == data.manufacturerAddress){
+          index=i;
+          break;
+        }
+      }
+      // console.log("indx is ", index)
+      manufac.incomingRequest.splice(index, 1);
+      manufac
+         .save()
+            .then(updatedManufacturer => {
+            // console.log(",...")                              
+             })
+             .catch(err => console.log(err));
+    })
+
     const uniqueManufacturer=await manufacturer.findOne({manufacturerAddress:data.manufacturerAddress});
     // console.log("Here is the error: ", uniqueManufacturer)
     if(uniqueManufacturer){

@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var manif = new mongoose.Schema(
+var okkk = new mongoose.Schema(
     {
         manufacturerAddress: {
             type: String,
@@ -21,7 +21,6 @@ var manif = new mongoose.Schema(
             type: String,
             required: true
         }
-
 });
 
-module.exports = mongoose.model("manif", manif);
+module.exports = mongoose.model("okkk", okkk);

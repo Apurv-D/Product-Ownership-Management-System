@@ -126,6 +126,39 @@ const verifyManufacturer = async (req, res, next) => {
   }
 };
 
+
+const declineManufacturer = async (req, res, next) => {
+  try {
+    const data = (req.body);
+    manufacturer.findOne({manufacturerAddress:"0x215617803F8d8a4F46f8F59382972257135766A2"}).then((manufac)=>{
+      var arr = manufac.incomingRequest;
+      var index=-1;    
+      for(var i=0; i<arr.length; i++){
+        console.log(arr[i].walletAddress == data.manufacturerAddress)
+        if(arr[i].productId == data.companyCode && arr[i].walletAddress == data.manufacturerAddress){
+          index=i;
+          break;
+        }
+      }
+      // console.log("indx is ", index)
+      manufac.incomingRequest.splice(index, 1);
+      manufac
+         .save()
+            .then(updatedManufacturer => {
+            // console.log(",...")                              
+             })
+             .catch(err => console.log(err));
+    })
+
+   return apiResponse.successResponseWithData(res, "Succesfully request was declined");
+
+  } catch (err) {
+    console.log(err);
+    return handlerError(res, err);
+  }
+};
+
+
 const addRequest = async (req, res, next) => {
   try {
     const data = (req.body);
@@ -249,6 +282,7 @@ module.exports = {
   confirmProduct,
   updateManufacturer,
   acceptProductRequest,
-  addRequest
+  addRequest,
+  declineManufacturer
 };
 

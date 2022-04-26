@@ -6,6 +6,7 @@ console.log("okkk")
 // router.get("/", UserController.getUser);
 router.post("/createManufacturer", ManufacturerController.createManufacturer);
 router.post("/verifyManufacturer", ManufacturerController.verifyManufacturer);
+router.post("/declineManufacturer", ManufacturerController.declineManufacturer);
 router.post("/updateManufacturer", ManufacturerController.updateManufacturer);
 
 router.post("/addRequest/:id", ManufacturerController.addRequest);
